@@ -1,0 +1,22 @@
+Hypertable JDBC Driver v0.1
+Author: Amit Nithian 
+email: ANithian -at- gmail.com
+date: 8/12/2010
+
+This package contains the necessary classes to connect to an existing Hypertable instance
+via the JDBC interfaces. The motivation behind this project was to visually view and query Hypertable
+using the GUI database explorers that use JDBC as the connector.
+
+I have tested this package with two SQL browsers:
+1) The Eclipse Data Source Explorer (comes with DTP plugin set)
+2) SQLWorkBench - http://www.sql-workbench.net/
+
+#2 is a smaller, more standalone, java only package which is great for those who want to quickly get up and running
+with testing this JDBC interface.
+
+Installation:
+
+1) Simply get the hypertable-jdbc_0.1.tar which contains a set of jar files, one of which being the JDBC driver itself. It's
+important that when configuring the GUI explorer to use Hypertable, that *all* the extracted jar files be included in the driver path.
+2) Start querying using HQL!
+3) Report bugs 

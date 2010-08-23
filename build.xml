@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="dist" name="HypertableJDBC">
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+	<property name="output.dir" value="classes"/>
+	<property name="dist.dir" value="dist"/>
+	<property name="version" value="0.1"/>
+	
+    <path id="HypertableJDBC.classpath">
+        <pathelement location="lib/hypertable_0.9.3.3_client.jar"/>
+        <pathelement location="lib/libthrift-0.3.0.jar"/>
+        <pathelement location="lib/log4j-1.2.13.jar"/>
+        <pathelement location="lib/slf4j-api-1.5.8.jar"/>
+        <pathelement location="lib/slf4j-log4j12-1.5.8.jar"/>
+    	<pathelement location="classes/"/>
+    </path>
+	
+    <target name="init">
+        <mkdir dir="${output.dir}"/>
+    	<mkdir dir="${dist.dir}"/>
+    </target>
+	
+    <target name="clean">
+        <delete dir="${output.dir}"/>
+    	<delete dir="${dist.dir}"/>
+    </target>
+	
+    <target depends="clean,init" name="compile">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="${output.dir}" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="HypertableJDBC.classpath"/>
+        </javac>
+    </target>
+	
+	<target name="dist" depends="compile">
+		<copy todir="${dist.dir}">
+			<fileset dir="lib/" includes="*.jar"></fileset>
+		</copy>
+		<jar destfile="${dist.dir}/hypertable-jdbc_${version}.jar" basedir="${output.dir}"></jar>
+		<tar destfile="${dist.dir}/hypertable-jdbc_${version}.tar" basedir="${dist.dir}"></tar>
+	</target>
+	
+        <target name="HypertableJDBCTester">
+            <java classname="org.hokiesuns.hypertable.HypertableJDBCTester" failonerror="true" fork="yes">
+                <classpath refid="HypertableJDBC.classpath"/>
+            	<arg value="${HTHost}"/>
+            </java>
+        </target>	
+</project>
