@@ -19,4 +19,4 @@ Installation:
 1) Simply get the hypertable-jdbc_0.1.tar which contains a set of jar files, one of which being the JDBC driver itself. It's
 important that when configuring the GUI explorer to use Hypertable, that *all* the extracted jar files be included in the driver path.
 2) Start querying using HQL!
-3) Report bugs 
+3) Report bugs using the issue tracker at http://github.com/ANithian/hyperjdbc
