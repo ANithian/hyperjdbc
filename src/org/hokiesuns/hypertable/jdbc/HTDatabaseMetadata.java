@@ -32,14 +32,17 @@ public class HTDatabaseMetadata implements DatabaseMetaData {
 //	private Map<String,ResultSet> mTableInformation; //Map of table information resultsets
 	private ResultSet mTableRS; //The resultset used by the getSchemas() method
 	private ThriftClient mHtClient = null;
-	public HTDatabaseMetadata(ThriftClient pHTClient) throws TException, ClientException
+	private long mCurrentNamespace;
+	
+	public HTDatabaseMetadata(ThriftClient pHTClient, long pNamespace) throws TException, ClientException
 	{
 		mHtClient = pHTClient;
+		mCurrentNamespace = pNamespace;		
 	}
 	
 	private void reloadInfo() throws Exception
 	{
-		List<String> lTables = mHtClient.get_tables();
+		List<String> lTables = mHtClient.get_tables(mCurrentNamespace);
 		List<Map<String, Object>> tableRows = new ArrayList<Map<String,Object>>();
 		
 		for(String s:lTables)
@@ -58,7 +61,7 @@ public class HTDatabaseMetadata implements DatabaseMetaData {
 			
 			tableRows.add(tableMap);
 //			mTableInformation.put(s,new MapResultSet(tableRows));
-			mColumnInformation.put(s, populateTableInformation(s, mHtClient.get_schema(s)));
+			mColumnInformation.put(s, populateTableInformation(s, mHtClient.get_schema(mCurrentNamespace,s)));
 		}
 		
 		mTableRS = new MapResultSet(tableRows);

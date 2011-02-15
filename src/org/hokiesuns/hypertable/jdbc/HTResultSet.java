@@ -855,7 +855,7 @@ public class HTResultSet implements ResultSet {
 			mCurrentRowColumns.add(sFullyQualifiedColumn);
 			String sVal = null;
 			if(mCurrentCell.value != null)
-				sVal = new String(mCurrentCell.value);
+				sVal = new String(mCurrentCell.getValue());
 			mCurrentRow.put(sFullyQualifiedColumn,sVal);
 		}
 	}

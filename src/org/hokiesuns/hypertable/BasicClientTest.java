@@ -7,6 +7,7 @@
 
 package org.hokiesuns.hypertable;
 
+import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.List;
 
@@ -22,11 +23,12 @@ public class BasicClientTest {
       ThriftClient client = ThriftClient.create("localhost", 38080);
 
       // HQL examples
-      show(client.hql_query("show tables").toString());
-      show(client.hql_query("select * from thrift_test").toString());
+      long lNameSpace = client.open_namespace("/");
+      show(client.hql_query(lNameSpace,"show tables").toString());
+      show(client.hql_query(lNameSpace,"select * from thrift_test").toString());
       // Schema example
       Schema schema = new Schema();
-      schema = client.get_schema("thrift_test");
+      schema = client.get_schema(lNameSpace,"thrift_test");
 
       Iterator ag_it = schema.access_groups.keySet().iterator();
       show("Access groups:");
@@ -41,14 +43,14 @@ public class BasicClientTest {
       }
 
       // mutator examples
-      long mutator = client.open_mutator("thrift_test", 0, 0);
+      long mutator = client.open_mutator(lNameSpace,"thrift_test", 0, 0);
 
       try {
         Cell cell = new Cell();
         cell.key.row = "java-k1";
         cell.key.column_family = "col";
         String vtmp = "java-v1";
-        cell.value = vtmp.getBytes();
+        cell.value = ByteBuffer.wrap(vtmp.getBytes());
         client.set_cell(mutator, cell);
       }
       finally {
@@ -65,21 +67,21 @@ public class BasicClientTest {
         cell.key.row = "java-put1";
         cell.key.column_family = "col";
         String vtmp = "java-put-v1";
-        cell.value = vtmp.getBytes();
-        client.put_cell("thrift_test", mutate_spec, cell);
+        cell.value = ByteBuffer.wrap(vtmp.getBytes());
+        client.offer_cell(lNameSpace,"thrift_test", mutate_spec, cell);
 
         cell.key.row = "java-put2";
         cell.key.column_family = "col";
         vtmp = "java-put-v2";
-        cell.value = vtmp.getBytes();
-        client.refresh_shared_mutator("thrift_test", mutate_spec);
-        client.put_cell("thrift_test", mutate_spec, cell);
+        cell.value = ByteBuffer.wrap(vtmp.getBytes());
+        client.refresh_shared_mutator(lNameSpace,"thrift_test", mutate_spec);
+        client.offer_cell(lNameSpace,"thrift_test", mutate_spec, cell);
         Thread.sleep(2000);
       }
 
       // scanner examples
       ScanSpec scanSpec = new ScanSpec(); // empty scan spec select all
-      long scanner = client.open_scanner("thrift_test", scanSpec, true);
+      long scanner = client.open_scanner(lNameSpace,"thrift_test", scanSpec, true);
 
       try {
         List<Cell> cells = client.next_cells(scanner);

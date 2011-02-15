@@ -38,6 +38,13 @@ public class HTDriver implements Driver {
 	}
 
 	@Override
+	/**
+	 * This creates a new connection to hypertable. Since 0.9.4, namespaces are 
+	 * supported and to support aboslute vs relative namespace, if the root
+	 * namespace begins with '/', then you must specify a '//'. Example:
+	 * jdbc:hypertable://localhost:38080//data/qa ==> '/data/qa' namespace
+	 * 
+	 */
 	public Connection connect(String arg0, Properties arg1) throws SQLException {
 		
 		HTConnection conn = null;
@@ -45,8 +52,8 @@ public class HTDriver implements Driver {
 		{
 			String sConnUrl = arg0.replace("jdbc:", "");
 			URI u = new URI(sConnUrl);
-			//jdbc:hypertable://host:port
-			conn = new HTConnection(u.getHost(), u.getPort());
+			//jdbc:hypertable://host:port/namespace
+			conn = new HTConnection(u.getHost(), u.getPort(),u.getPath());
 		}
 		catch(Exception e)
 		{

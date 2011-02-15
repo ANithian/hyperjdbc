@@ -23,11 +23,13 @@ public class HTStatement implements Statement {
 	private ThriftClient mHtClient;
 	private Connection mHtConnection;
 	private ResultSet mCurrentResultSet = null;
+	private long mCurrentNamespace = 0;
 	
-	public HTStatement(ThriftClient pClient, Connection pConn)
+	public HTStatement(ThriftClient pClient, Connection pConn, long pNameSpace)
 	{
 		mHtConnection = pConn;
 		mHtClient = pClient;
+		mCurrentNamespace = pNameSpace;
 	}
 	
 	@Override
@@ -114,7 +116,7 @@ public class HTStatement implements Statement {
 	@Override
 	public ResultSet executeQuery(String arg0) throws SQLException {
 		try {
-			HqlResult result = mHtClient.hql_query(arg0.trim());
+			HqlResult result = mHtClient.hql_query(mCurrentNamespace,arg0.trim());
 			//If the result.cells is null, then it's a DML. return null;
 			if(result.cells == null)
 			{
@@ -127,7 +129,7 @@ public class HTStatement implements Statement {
 				String sTableInQuery = getTableName(arg0);
 				if(sTableInQuery == null)
 					throw new SQLException("Table " + sTableInQuery + " is not valid.");
-				Schema tableSchema = mHtClient.get_schema(sTableInQuery);
+				Schema tableSchema = mHtClient.get_schema(mCurrentNamespace,sTableInQuery);
 				List<String> lColumns = new ArrayList<String>();
 				lColumns.add(HTResultSet.ROW);
 				lColumns.add(HTResultSet.TIMESTAMP);

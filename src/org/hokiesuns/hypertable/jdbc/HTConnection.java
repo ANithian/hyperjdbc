@@ -20,6 +20,7 @@ import java.util.Properties;
 
 import org.apache.thrift.TException;
 import org.hypertable.thrift.ThriftClient;
+import org.hypertable.thriftgen.ClientException;
 
 /**
  * Hypertable Connection implementation providing basic functionality of the Connection
@@ -33,10 +34,26 @@ public class HTConnection implements Connection {
 
 	private ThriftClient mHtClient = null;
 	private boolean m_bIsClosed = false;
+	private long mNameSpace = 0;
 	
-	public HTConnection(String pHost, int pPort) throws TException
+	public HTConnection(String pHost, int pPort, String pNameSpace) throws TException
 	{
 		mHtClient = ThriftClient.create(pHost, pPort);
+		String sNameSpace = pNameSpace;
+		
+		if(sNameSpace != null && sNameSpace.length() > 0 && sNameSpace.startsWith("/"))
+		{
+		    sNameSpace = sNameSpace.substring(1);
+		}
+		try
+        {
+            mNameSpace = mHtClient.open_namespace(sNameSpace);
+        }
+        catch (ClientException e)
+        {
+            // TODO Auto-generated catch block
+            throw new TException(e);
+        }
 	}
 	
 	@Override
@@ -91,20 +108,20 @@ public class HTConnection implements Connection {
 	@Override
 	public Statement createStatement() throws SQLException {
 		
-		return new HTStatement(mHtClient,this);
+		return new HTStatement(mHtClient,this,mNameSpace);
 	}
 
 	@Override
 	public Statement createStatement(int arg0, int arg1) throws SQLException {
 		
-		return new HTStatement(mHtClient,this);
+		return new HTStatement(mHtClient,this,mNameSpace);
 	}
 
 	@Override
 	public Statement createStatement(int arg0, int arg1, int arg2)
 			throws SQLException {
 		
-		return new HTStatement(mHtClient,this);
+		return new HTStatement(mHtClient,this,mNameSpace);
 	}
 
 	@Override
@@ -149,7 +166,7 @@ public class HTConnection implements Connection {
 		
 		try 
 		{
-			retVal = new HTDatabaseMetadata(mHtClient);
+			retVal = new HTDatabaseMetadata(mHtClient,mNameSpace);
 		} 
 		catch (Exception e)
 		{

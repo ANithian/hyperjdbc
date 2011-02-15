@@ -10,18 +10,19 @@ public class HypertableTester
 {
 	public static void main(String[] args) throws Exception
 	{
-		ThriftClient client = ThriftClient.create("192.168.116.128", 38080);
-		List<String> tables = client.get_tables();
+		ThriftClient client = ThriftClient.create("engineering-mm.admin.zvents.com", 38080);
+		long lNameSpace=client.open_namespace("/");
+		List<String> tables = client.get_tables(lNameSpace);
 		System.out.println("Available Tables:");
 		for(String s:tables)
 		{
 			System.out.println(s);
 		}
-		HqlResult result = client.hql_query("select * from user_table");
+		HqlResult result = client.hql_query(lNameSpace,"select * from user_table");
 		List<Cell> cells = result.cells;
 		for(Cell c:cells)
 		{
-			System.out.println("Key = " + c.getKey() + ",Value = " + new String(c.value));
+			System.out.println("Key = " + c.getKey() + ",Value = " + new String(c.getValue()));
 		}
 //		result = client.hql_query("insert into foo values('003','c1','Hello')");
 //		System.out.println(result.results);

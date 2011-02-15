@@ -10,15 +10,12 @@
     <property name="source" value="1.6"/>
 	<property name="output.dir" value="classes"/>
 	<property name="dist.dir" value="dist"/>
-	<property name="version" value="0.1"/>
+	<property name="version" value="0.9.4.2"/>
 	
     <path id="HypertableJDBC.classpath">
-        <pathelement location="lib/hypertable_0.9.3.3_client.jar"/>
-        <pathelement location="lib/libthrift-0.3.0.jar"/>
-        <pathelement location="lib/log4j-1.2.13.jar"/>
-        <pathelement location="lib/slf4j-api-1.5.8.jar"/>
-        <pathelement location="lib/slf4j-log4j12-1.5.8.jar"/>
-    	<pathelement location="classes/"/>
+        <fileset dir="lib/">
+            <include name="**/*.jar"/>
+        </fileset>
     </path>
 	
     <target name="init">

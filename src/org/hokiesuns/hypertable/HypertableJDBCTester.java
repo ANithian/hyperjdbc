@@ -27,7 +27,7 @@ public class HypertableJDBCTester {
 		
 		new HTDriver();
 		System.out.println("Getting new connection.");
-		Connection conn = DriverManager.getConnection("jdbc:hypertable://" + args[0] + ":38080");
+		Connection conn = DriverManager.getConnection("jdbc:hypertable://" + args[0] + ":38080//");
 		Statement stmt = conn.createStatement();
 		
 		DatabaseMetaData metaData = conn.getMetaData();
