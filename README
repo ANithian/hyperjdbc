@@ -16,7 +16,21 @@ with testing this JDBC interface.
 
 Installation:
 
-1) Simply get the hypertable-jdbc_0.1.tar which contains a set of jar files, one of which being the JDBC driver itself. It's
+1) Simply get the hypertable-jdbc_0.9.x.tar which contains a set of jar files, one of which being the JDBC driver itself. It's
 important that when configuring the GUI explorer to use Hypertable, that *all* the extracted jar files be included in the driver path.
 2) Start querying using HQL!
 3) Report bugs using the issue tracker at http://github.com/ANithian/hyperjdbc
+
+NOTE:
+- The tar file reflects the version of hypertable with which this JDBC driver is compatible.
+- Version 0.1 (first version uploaded) works with 0.9.3.x and does not have namespace support
+- Version 0,9.4.x of the driver has support for namespaces (for which you must specify one). Namespaces
+are specified in the URL as follows:
+jdbc:hypertable://host:port/namespace/sub-namespace...
+    * If your namespace starts with '/' then simply include the '/' in the beginning. The driver will strip
+    the first '/' from the URI path and that becomes the namespace. This allows for connecting to namespaces that
+    start with and without the '/'.
+    * Once you connet to a namespace, to connect to another namespace, you have to close and re-open your connection using
+    a new URL. Hypertable doesn't yet support selecting from a table in a different namespace from the one you 'use'd or connected
+    to already.
+      
