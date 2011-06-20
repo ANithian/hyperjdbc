@@ -369,4 +369,8 @@ public class HTConnection implements Connection {
 		return null;
 	}
 
+	public ThriftClient getThriftClient()
+	{
+	    return mHtClient;
+	}
 }
