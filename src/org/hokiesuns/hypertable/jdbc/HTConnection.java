@@ -1,5 +1,6 @@
 package org.hokiesuns.hypertable.jdbc;
 
+import java.nio.ByteBuffer;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
@@ -20,7 +21,10 @@ import java.util.Properties;
 
 import org.apache.thrift.TException;
 import org.hypertable.thrift.ThriftClient;
+import org.hypertable.thriftgen.Cell;
 import org.hypertable.thriftgen.ClientException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Hypertable Connection implementation providing basic functionality of the Connection
@@ -35,6 +39,7 @@ public class HTConnection implements Connection {
 	private ThriftClient mHtClient = null;
 	private boolean m_bIsClosed = false;
 	private long mNameSpace = 0;
+	private static Logger sm_log = LoggerFactory.getLogger(HTConnection.class);
 	
 	public HTConnection(String pHost, int pPort, String pNameSpace) throws TException
 	{
@@ -372,5 +377,28 @@ public class HTConnection implements Connection {
 	public ThriftClient getThriftClient()
 	{
 	    return mHtClient;
+	}
+	
+	public long getCurrentNameSpace()
+	{
+	    return mNameSpace;
+	}
+	
+	public String getCellValue(String pTable, String pRow, String pCol)
+	{
+	    ByteBuffer buf;
+        try
+        {
+            buf = mHtClient.get_cell(mNameSpace, pTable, pRow, pCol);
+            Cell cTemp = new Cell();
+            cTemp.setValue(buf);
+            return new String(cTemp.getValue());
+        }
+        catch (Exception e)
+        {
+            // TODO Auto-generated catch block
+            sm_log.error("ERROR", e);
+        }
+        return "";
 	}
 }
