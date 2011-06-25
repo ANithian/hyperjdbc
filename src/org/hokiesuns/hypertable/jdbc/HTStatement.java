@@ -6,9 +6,14 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.apache.thrift.TException;
+import org.hokiesuns.hypertable.CellsIterator;
 import org.hypertable.thrift.ThriftClient;
+import org.hypertable.thriftgen.Cell;
+import org.hypertable.thriftgen.ClientException;
 import org.hypertable.thriftgen.HqlResult;
 import org.hypertable.thriftgen.Schema;
 
@@ -116,35 +121,42 @@ public class HTStatement implements Statement {
 	@Override
 	public ResultSet executeQuery(String arg0) throws SQLException {
 		try {
-			HqlResult result = mHtClient.hql_query(mCurrentNamespace,arg0.trim());
-			//If the result.cells is null, then it's a DML. return null;
-			if(result.cells == null)
-			{
-				mCurrentResultSet = null;
-			}
-			else
-			{
-				//Parse the query for the table being selected and then
-				//issue a schema request to populate a list of columns
-				String sTableInQuery = getTableName(arg0);
-				if(sTableInQuery == null)
-					throw new SQLException("Table " + sTableInQuery + " is not valid.");
-				Schema tableSchema = mHtClient.get_schema(mCurrentNamespace,sTableInQuery);
-				List<String> lColumns = new ArrayList<String>();
-				lColumns.add(HTResultSet.ROW);
-				lColumns.add(HTResultSet.TIMESTAMP);
-				
-				lColumns.addAll(tableSchema.column_families.keySet());
-				
-				mCurrentResultSet=new HTResultSet(result,this,lColumns);
-			}
+		    //Optimization. If the query contains no "where" clause, then
+		    //use a scanner and effectively disregard the 'projection' part of the
+		    //query in favor of speed.
+		    String sLowerQuery = arg0.toLowerCase();
+            //Parse the query for the table being selected and then
+            //issue a schema request to populate a list of columns
+            String sTableInQuery = getTableName(arg0);
+            if(sTableInQuery == null)
+                throw new SQLException("Table " + sTableInQuery + " is not valid.");
+            List<String> lColumns = null;
+            
+            HqlResult result = mHtClient.hql_exec(mCurrentNamespace, arg0.trim(), false, true);
+            
+            Iterator<Cell> cellIterator = new CellsIterator(mHtClient, result.scanner);
+            if(cellIterator.hasNext())
+            {
+                lColumns = getTableColumns(sTableInQuery);
+                mCurrentResultSet = new HTResultSet(cellIterator, this, lColumns);
+            }
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			throw new SQLException("Error executing " + arg0 + " because of " + e.getMessage());
+			throw new SQLException("Error executing " + arg0,e);
 		}
 		return mCurrentResultSet;
 	}
 
+	private List<String> getTableColumns(String pTableName) throws ClientException, TException
+	{
+        Schema tableSchema = mHtClient.get_schema(mCurrentNamespace,pTableName);
+        List<String> lColumns = new ArrayList<String>();
+        lColumns.add(HTResultSet.ROW);
+        lColumns.add(HTResultSet.TIMESTAMP);
+        
+        lColumns.addAll(tableSchema.column_families.keySet());
+        return lColumns;
+	}
 	@Override
 	public int executeUpdate(String arg0) throws SQLException {
 		

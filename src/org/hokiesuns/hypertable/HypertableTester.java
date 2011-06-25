@@ -2,14 +2,20 @@ package org.hokiesuns.hypertable;
 
 import java.util.List;
 
+import org.apache.log4j.PropertyConfigurator;
 import org.hypertable.thrift.ThriftClient;
 import org.hypertable.thriftgen.Cell;
 import org.hypertable.thriftgen.HqlResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HypertableTester 
 {
 	public static void main(String[] args) throws Exception
 	{
+	    PropertyConfigurator.configure("config/log4j.properties");
+	    Logger log = LoggerFactory.getLogger(HypertableTester.class);
+	    log.debug("Test message");
 		ThriftClient client = ThriftClient.create("engineering-mm.admin.zvents.com", 38080);
 		long lNameSpace=client.open_namespace("/");
 		List<String> tables = client.get_tables(lNameSpace);

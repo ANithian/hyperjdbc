@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.hypertable.thriftgen.Cell;
-import org.hypertable.thriftgen.HqlResult;
 
 /**
  * Implementation of ResultSet that provides all the necessary methods to retrieve both
@@ -47,7 +46,7 @@ import org.hypertable.thriftgen.HqlResult;
  */
 public class HTResultSet implements ResultSet {
 
-	private HqlResult mHqlResult;
+//	private HqlResult mHqlResult;
 	private Iterator<Cell> mCellIterator;
 	
 	private Map<String,String> mCurrentRow= new HashMap<String, String>();
@@ -66,10 +65,10 @@ public class HTResultSet implements ResultSet {
 	
 	private ResultSetMetaData mResultSetMeta = null;
 	
-	public HTResultSet(HqlResult pResult, Statement pStatement, List<String> pColumnList) throws SQLException
+	public HTResultSet(Iterator<Cell> pCellIterator, Statement pStatement, List<String> pColumnList) throws SQLException
 	{
-		mHqlResult = pResult;
-		mCellIterator = mHqlResult.getCellsIterator();
+//		mHqlResult = pResult;
+		mCellIterator = pCellIterator;
 		mStatement = pStatement;
 		mColumns = pColumnList;
 
