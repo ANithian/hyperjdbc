@@ -245,7 +245,7 @@ public class HTConnection implements Connection {
 	@Override
 	public PreparedStatement prepareStatement(String arg0) throws SQLException {
 		
-		return null;
+		return new HTPreparedStatement(mHtClient, this, mNameSpace, arg0);
 	}
 
 	@Override
@@ -385,6 +385,7 @@ public class HTConnection implements Connection {
 	}
 	
 	public String getCellValue(String pTable, String pRow, String pCol)
+	throws SQLException
 	{
 	    ByteBuffer buf;
         try
@@ -397,8 +398,21 @@ public class HTConnection implements Connection {
         catch (Exception e)
         {
             // TODO Auto-generated catch block
-            sm_log.error("ERROR", e);
+            throw new SQLException(e);
         }
-        return "";
+	}
+	
+	public long getMutator(String pTable, int pFlushInterval) throws SQLException
+	{
+	    long lReturn = 0;
+	    try
+	    {
+	        lReturn = mHtClient.open_mutator(mNameSpace, pTable, 0, pFlushInterval);
+	    }
+	    catch(Exception e)
+	    {
+	        throw new SQLException(e);
+	    }
+	    return lReturn;
 	}
 }

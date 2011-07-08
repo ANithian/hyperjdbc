@@ -108,7 +108,7 @@ public class HTStatement implements Statement {
 		for(String s:sWords)
 		{
 			if(!bFromFound)
-				bFromFound = s.equalsIgnoreCase("from");
+				bFromFound = (s.equalsIgnoreCase("from") || s.equalsIgnoreCase("into"));
 			else
 			{
 				sTableName = s.replaceAll(";","");
@@ -121,10 +121,6 @@ public class HTStatement implements Statement {
 	@Override
 	public ResultSet executeQuery(String arg0) throws SQLException {
 		try {
-		    //Optimization. If the query contains no "where" clause, then
-		    //use a scanner and effectively disregard the 'projection' part of the
-		    //query in favor of speed.
-		    String sLowerQuery = arg0.toLowerCase();
             //Parse the query for the table being selected and then
             //issue a schema request to populate a list of columns
             String sTableInQuery = getTableName(arg0);
@@ -133,12 +129,15 @@ public class HTStatement implements Statement {
             List<String> lColumns = null;
             
             HqlResult result = mHtClient.hql_exec(mCurrentNamespace, arg0.trim(), false, true);
-            
-            Iterator<Cell> cellIterator = new CellsIterator(mHtClient, result.scanner);
-            if(cellIterator.hasNext())
+            if(result.scanner != 0)
             {
+                Iterator<Cell> cellIterator = new CellsIterator(mHtClient, result.scanner);
                 lColumns = getTableColumns(sTableInQuery);
                 mCurrentResultSet = new HTResultSet(cellIterator, this, lColumns);
+            }
+            else
+            {
+                mCurrentResultSet = new HTResultSet(new ArrayList<Cell>().iterator(), this, new ArrayList<String>()); 
             }
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
