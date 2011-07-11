@@ -10,7 +10,7 @@
     <property name="source" value="1.6"/>
 	<property name="output.dir" value="classes"/>
 	<property name="dist.dir" value="dist"/>
-	<property name="version" value="0.9.4.2"/>
+	<property name="version" value="0.9.5.0p6"/>
 	
     <path id="HypertableJDBC.classpath">
         <fileset dir="lib/">
@@ -40,14 +40,14 @@
 		<copy todir="${dist.dir}">
 			<fileset dir="lib/" includes="*.jar"></fileset>
 		</copy>
-		<jar destfile="${dist.dir}/hypertable-jdbc_${version}.jar" basedir="${output.dir}"></jar>
-		<tar destfile="${dist.dir}/hypertable-jdbc_${version}.tar" basedir="${dist.dir}"></tar>
+		<jar destfile="${dist.dir}/hyperjdbc_${version}.jar" basedir="${output.dir}"></jar>
+		<tar destfile="${dist.dir}/hyperjdbc_${version}.tar" basedir="${dist.dir}"></tar>
 	</target>
 	
-        <target name="HypertableJDBCTester">
-            <java classname="org.hokiesuns.hypertable.HypertableJDBCTester" failonerror="true" fork="yes">
-                <classpath refid="HypertableJDBC.classpath"/>
-            	<arg value="${HTHost}"/>
-            </java>
-        </target>	
+    <target name="HypertableJDBCTester">
+        <java classname="org.hokiesuns.hypertable.HypertableJDBCTester" failonerror="true" fork="yes">
+            <classpath refid="HypertableJDBC.classpath"/>
+        	<arg value="${HTHost}"/>
+        </java>
+    </target>	
 </project>
