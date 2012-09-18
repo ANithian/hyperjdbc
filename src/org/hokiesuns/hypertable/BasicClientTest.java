@@ -51,10 +51,10 @@ public class BasicClientTest {
         cell.key.column_family = "col";
         String vtmp = "java-v1";
         cell.value = ByteBuffer.wrap(vtmp.getBytes());
-        client.set_cell(mutator, cell);
+        client.set_cell(mutator,"thrift_test", cell);
       }
       finally {
-        client.close_mutator(mutator, true);
+        client.close_mutator(mutator);
       }
 
       // shared mutator example
@@ -81,7 +81,7 @@ public class BasicClientTest {
 
       // scanner examples
       ScanSpec scanSpec = new ScanSpec(); // empty scan spec select all
-      long scanner = client.open_scanner(lNameSpace,"thrift_test", scanSpec, true);
+      long scanner = client.open_scanner(lNameSpace,"thrift_test", scanSpec);
 
       try {
         List<Cell> cells = client.next_cells(scanner);

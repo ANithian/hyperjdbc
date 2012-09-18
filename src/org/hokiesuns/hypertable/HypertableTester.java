@@ -16,7 +16,7 @@ public class HypertableTester
 	    PropertyConfigurator.configure("config/log4j.properties");
 	    Logger log = LoggerFactory.getLogger(HypertableTester.class);
 	    log.debug("Test message");
-		ThriftClient client = ThriftClient.create("engineering-mm.admin.zvents.com", 38080);
+		ThriftClient client = ThriftClient.create("search10.admin.zvents.com", 38080);
 		long lNameSpace=client.open_namespace("/");
 		List<String> tables = client.get_tables(lNameSpace);
 		System.out.println("Available Tables:");
@@ -24,7 +24,7 @@ public class HypertableTester
 		{
 			System.out.println(s);
 		}
-		HqlResult result = client.hql_query(lNameSpace,"select * from user_table");
+		HqlResult result = client.hql_query(lNameSpace,"select * from product_features limit 10");
 		List<Cell> cells = result.cells;
 		for(Cell c:cells)
 		{
