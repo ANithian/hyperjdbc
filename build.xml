@@ -10,7 +10,7 @@
     <property name="source" value="1.6"/>
 	<property name="output.dir" value="classes"/>
 	<property name="dist.dir" value="dist"/>
-	<property name="version" value="0.9.5.0p6"/>
+	<property name="version" value="0.9.5.6"/>
 	
     <path id="HypertableJDBC.classpath">
         <fileset dir="lib/">
